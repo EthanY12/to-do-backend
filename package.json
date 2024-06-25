@@ -1,23 +1,23 @@
-  {
-    "name": "to-do-backend",
-    "version": "1.0.0",
-    "description": "",
-    "main": "index.js",
-    "scripts": {
-      "test": "echo \"Error: no test specified\" && exit 1",
-      "prettier-watch": "onchange \"**/*\" -- prettier --write --ignore-unknown {{changed}}"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "dependencies": {
-      "bcryptjs": "^2.4.3",
-      "body-parser": "^1.20.2",
-      "cors": "^2.8.5",
-      "express": "^4.19.2",
-      "jsonwebtoken": "^9.0.2",
-      "mongoose": "^8.4.3",
-      "sequelize": "^6.37.3",
-      "sqlite3": "^5.1.7"
-    }
+{
+  "name": "to-do-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prettier-watch": "onchange \"**/*\" -- prettier --write --ignore-unknown {{changed}}"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.4.3",
+    "sequelize": "^6.37.3",
+    "sqlite3": "^5.1.7"
   }
+}
