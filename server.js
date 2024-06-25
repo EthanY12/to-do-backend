@@ -52,32 +52,34 @@ app.post("/register", async (req, res) => {
   }
 });
 
-app.post('/login', async (req, res) => {
+app.post("/login", async (req, res) => {
   const { username, password } = req.body;
   try {
     const user = await User.findOne({ where: { username } });
-    if (!user) return res.status(400).json({ message: 'User not found' });
+    if (!user) return res.status(400).json({ message: "User not found" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+    if (!isMatch)
+      return res.status(400).json({ message: "Invalid credentials" });
 
-    const token = jwt.sign({ userId: user.id }, 'secret', { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user.id }, "secret", { expiresIn: "1h" });
     res.json({ token });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
 const auth = (req, res, next) => {
-  const token = req.header('Authorization').replace('Bearer ', '');
-  if (!token) return res.status(401).json({ message: 'No token, authorization denied' });
+  const token = req.header("Authorization").replace("Bearer ", "");
+  if (!token)
+    return res.status(401).json({ message: "No token, authorization denied" });
 
   try {
-    const decoded = jwt.verify(token, 'secret');
+    const decoded = jwt.verify(token, "secret");
     req.user = decoded;
     next();
   } catch (e) {
-    res.status(400).json({ message: 'Token is not valid' });
+    res.status(400).json({ message: "Token is not valid" });
   }
 };
 
