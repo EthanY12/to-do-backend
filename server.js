@@ -52,21 +52,36 @@ app.post("/register", async (req, res) => {
   }
 });
 
+
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
   try {
+    console.log(`Attempting to log in user: ${username}`);
     const user = await User.findOne({ where: { username } });
-    if (!user) return res.status(400).json({ message: 'User not found' });
+    if (!user) {
+      console.log('User not found');
+      return res.status(400).json({ message: 'User not found' });
+    }
+
+    console.log(`User found: ${user.username}`);
+    console.log(`Stored password hash: ${user.password}`);
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+    if (!isMatch) {
+      console.log('Invalid credentials');
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
 
+    console.log('Password match');
     const token = jwt.sign({ userId: user.id }, 'secret', { expiresIn: '1h' });
+    console.log('Login successful, returning token');
     res.json({ token });
   } catch (error) {
+    console.error('Server error during login:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
+
 
 const auth = (req, res, next) => {
   const token = req.header('Authorization').replace('Bearer ', '');
