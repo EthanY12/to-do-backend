@@ -52,15 +52,14 @@ app.post("/register", async (req, res) => {
   }
 });
 
-
-app.post('/login', async (req, res) => {
+app.post("/login", async (req, res) => {
   const { username, password } = req.body;
   try {
     console.log(`Attempting to log in user: ${username}`);
     const user = await User.findOne({ where: { username } });
     if (!user) {
-      console.log('User not found');
-      return res.status(400).json({ message: 'User not found' });
+      console.log("User not found");
+      return res.status(400).json({ message: "User not found" });
     }
 
     console.log(`User found: ${user.username}`);
@@ -68,31 +67,31 @@ app.post('/login', async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      console.log('Invalid credentials');
-      return res.status(400).json({ message: 'Invalid credentials' });
+      console.log("Invalid credentials");
+      return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    console.log('Password match');
-    const token = jwt.sign({ userId: user.id }, 'secret', { expiresIn: '1h' });
-    console.log('Login successful, returning token');
+    console.log("Password match");
+    const token = jwt.sign({ userId: user.id }, "secret", { expiresIn: "1h" });
+    console.log("Login successful, returning token");
     res.json({ token });
   } catch (error) {
-    console.error('Server error during login:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("Server error during login:", error);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
-
 const auth = (req, res, next) => {
-  const token = req.header('Authorization').replace('Bearer ', '');
-  if (!token) return res.status(401).json({ message: 'No token, authorization denied' });
+  const token = req.header("Authorization").replace("Bearer ", "");
+  if (!token)
+    return res.status(401).json({ message: "No token, authorization denied" });
 
   try {
-    const decoded = jwt.verify(token, 'secret');
+    const decoded = jwt.verify(token, "secret");
     req.user = decoded;
     next();
   } catch (e) {
-    res.status(400).json({ message: 'Token is not valid' });
+    res.status(400).json({ message: "Token is not valid" });
   }
 };
 
