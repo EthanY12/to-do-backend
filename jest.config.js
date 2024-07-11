@@ -1,5 +1,6 @@
 module.exports = {
-    testEnvironment: 'node',
-    testPathIgnorePatterns: ['/node_modules/'],
-  };
-  
+  testEnvironment: 'node',
+  transform: {
+    '^.+\\.jsx?$': 'babel-jest',
+  },
+};

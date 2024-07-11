@@ -73,7 +73,7 @@ app.post('/register', async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({ username, password: hashedPassword });
-    res.status(201).json({ message: 'User registered' });
+    res.status(201).json({ message: 'User registered', user });
   } catch (error) {
     res.status(400).json({ message: 'Registration failed', error: error.message });
   }
@@ -92,7 +92,7 @@ app.post('/login', async (req, res) => {
     }
     res.json({ user });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 
@@ -101,19 +101,21 @@ app.get('/tickets', async (req, res) => {
     const tickets = await Ticket.findAll();
     res.json(tickets);
   } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch tickets' });
+    res.status(500).json({ message: 'Failed to fetch tickets', error: error.message });
   }
 });
 
 app.post('/tickets', async (req, res) => {
+
+  // collects
+  const { title, description, date, time, userId } = req.body;
+  console.log('Received data:', req.body); 
+  if (!title || !description || !date || !time || !userId) {
+    return res.status(400).json({ message: 'Missing required fields', data: req.body });
+  }
   try {
-    console.log('Received data:', req.body); // Log received data
-    const { title, description, date, time, userId } = req.body;
-    if (!title || !description || !date || !time || !userId) {
-      throw new Error('Missing required fields');
-    }
     const ticket = await Ticket.create(req.body);
-    res.json(ticket);
+    res.status(201).json(ticket);
   } catch (error) {
     console.error('Error creating ticket:', error); // Log detailed error
     res.status(500).json({ message: 'Failed to create ticket', error: error.message });
