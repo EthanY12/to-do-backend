@@ -53,34 +53,35 @@ const Ticket = sequelize.define('Ticket', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  userId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: User,
-      key: 'id',
-    },
-  },
 });
-
-User.hasMany(Ticket, { foreignKey: 'userId' });
-Ticket.belongsTo(User, { foreignKey: 'userId' });
 
 sequelize.sync();
 
 app.post('/register', async (req, res) => {
   const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ message: 'Username and password are required' });
+  }
+
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({ username, password: hashedPassword });
     res.status(201).json({ message: 'User registered', user });
   } catch (error) {
-    res.status(400).json({ message: 'Registration failed', error: error.message });
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      res.status(400).json({ message: 'Username already exists' });
+    } else {
+      res.status(500).json({ message: 'Registration failed', error: error.message });
+    }
   }
 });
 
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ message: 'Username and password are required' });
+  }
+
   try {
     const user = await User.findOne({ where: { username } });
     if (!user) {
@@ -96,29 +97,27 @@ app.post('/login', async (req, res) => {
   }
 });
 
+app.post('/tickets', async (req, res) => {
+  const { title, description, date, time } = req.body;
+  console.log('Received data:', req.body);
+  if (!title || !description || !date || !time) {
+    return res.status(400).json({ message: 'Missing required fields', data: req.body });
+  }
+  try {
+    const ticket = await Ticket.create({ title, description, date, time });
+    res.status(201).json(ticket);
+  } catch (error) {
+    console.error('Error creating ticket:', error); // Log detailed error
+    res.status(500).json({ message: 'Failed to create ticket', error: error.message });
+  }
+});
+
 app.get('/tickets', async (req, res) => {
   try {
     const tickets = await Ticket.findAll();
     res.json(tickets);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch tickets', error: error.message });
-  }
-});
-
-app.post('/tickets', async (req, res) => {
-
-  // collects
-  const { title, description, date, time, userId } = req.body;
-  console.log('Received data:', req.body); 
-  if (!title || !description || !date || !time || !userId) {
-    return res.status(400).json({ message: 'Missing required fields', data: req.body });
-  }
-  try {
-    const ticket = await Ticket.create(req.body);
-    res.status(201).json(ticket);
-  } catch (error) {
-    console.error('Error creating ticket:', error); // Log detailed error
-    res.status(500).json({ message: 'Failed to create ticket', error: error.message });
   }
 });
 
